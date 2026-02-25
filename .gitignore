@@ -11,3 +11,6 @@ __pycache__/
 
 # System
 .DS_Store
+
+# Local Netlify folder
+.netlify

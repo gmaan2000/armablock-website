@@ -43,11 +43,11 @@ const Navbar = ({ lang, setLang }) => {
                     }`}
             >
                 <div className="flex items-center justify-between">
-                    <div className="h-20 md:h-24 overflow-hidden flex items-start">
+                    <div className="h-12 md:h-24 overflow-hidden flex items-start">
                         <img
                             src="/assets/logo_transparent.png"
                             alt="Armablock Logo"
-                            className="h-24 md:h-28 object-contain object-top"
+                            className="h-14 md:h-28 object-contain object-top"
                         />
                     </div>
 
@@ -98,7 +98,7 @@ const Navbar = ({ lang, setLang }) => {
 
             {/* Mobile Menu Overlay */}
             {mobileOpen && (
-                <div className="fixed inset-0 z-[90] bg-black/95 flex flex-col items-center justify-center gap-8 text-white">
+                <div className="fixed inset-0 z-[90] bg-black flex flex-col items-center justify-center gap-8 text-white">
                     {['system', 'projects', 'process', 'franchise'].map((key) => (
                         <a
                             key={key}
@@ -152,13 +152,16 @@ const Hero = ({ lang }) => {
             className="relative h-[100dvh] w-full flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-16 overflow-hidden bg-black"
         >
             {/* Background Image */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
                     src="/assets/hero-bg.jpg"
                     alt="Armablock Construction"
                     className="w-full h-full object-cover opacity-50"
+                    style={{ objectPosition: '0% 60%', transform: 'scale(1.3)', transformOrigin: 'left center' }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/60"></div>
+                {/* Extra overlay to hide old logo in top-right corner */}
+                <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-transparent to-transparent"></div>
             </div>
 
             {/* Content */}
@@ -449,25 +452,9 @@ const Protocol = ({ lang }) => {
                 stagger: 0.15,
             });
 
+            // Entrance animation — all screen sizes
             const cardEls = gsap.utils.toArray('.protocol-card');
-
-            // Stacking sticky effect
-            cardEls.forEach((card, i) => {
-                gsap.to(card, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: `top ${15 + (i * 5)}%`, // Stagger top position
-                        endTrigger: ".protocol-end",
-                        end: "bottom bottom",
-                        pin: true,
-                        pinSpacing: false,
-                        scrub: true,
-                    },
-                    scale: 1 - ((cardEls.length - i) * 0.03), // Slight scale down as they stack
-                    opacity: i === cardEls.length - 1 ? 1 : 0.6, // Dim background ones
-                });
-
-                // Entrance animation
+            cardEls.forEach((card) => {
                 gsap.from(card, {
                     scrollTrigger: {
                         trigger: card,
@@ -478,6 +465,28 @@ const Protocol = ({ lang }) => {
                     duration: 0.8,
                     ease: 'power3.out',
                 });
+            });
+
+            // Stacking sticky effect — desktop only via matchMedia
+            ScrollTrigger.matchMedia({
+                "(min-width: 768px)": function () {
+                    const desktopCards = gsap.utils.toArray('.protocol-card');
+                    desktopCards.forEach((card, i) => {
+                        gsap.to(card, {
+                            scrollTrigger: {
+                                trigger: card,
+                                start: `top ${15 + (i * 5)}%`,
+                                endTrigger: ".protocol-end",
+                                end: "bottom bottom",
+                                pin: true,
+                                pinSpacing: false,
+                                scrub: true,
+                            },
+                            scale: 1 - ((desktopCards.length - i) * 0.03),
+                            opacity: i === desktopCards.length - 1 ? 1 : 0.6,
+                        });
+                    });
+                }
             });
         }, sectionRef);
         return () => ctx.revert();
